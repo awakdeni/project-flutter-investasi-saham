@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/stock_model.dart';
 import '../utils/app_colors.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PopularStocks extends StatelessWidget {
   final List<Stock> stocks;
@@ -18,14 +19,15 @@ class PopularStocks extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Text(
             'Saham Populer',
-            style: TextStyle(
-              fontSize: 18,
+            style: GoogleFonts.poppins(
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
+              letterSpacing: 0.2,
             ),
           ),
         ),
@@ -109,18 +111,18 @@ class PopularStocks extends StatelessWidget {
                             const Spacer(),
                             Text(
                               stock.symbol,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
-                                letterSpacing: -0.5,
-                                color: AppColors.textPrimary,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: const Color(0xFF374151),
+                                letterSpacing: 0.5,
                               ),
                             ),
                             Text(
                               stock.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: AppColors.textSecondary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w400,
@@ -129,8 +131,8 @@ class PopularStocks extends StatelessWidget {
                             const SizedBox(height: 12),
                             Text(
                               currencyFormat.format(stock.price),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
                                 fontSize: 16,
                                 color: AppColors.textPrimary,
                               ),

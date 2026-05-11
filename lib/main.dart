@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'dart:ui';
 import 'utils/app_colors.dart';
 import 'models/stock_model.dart';
 import 'services/stock_service.dart';
@@ -7,9 +9,11 @@ import 'widgets/horizontal_menu.dart';
 import 'widgets/popular_stocks.dart';
 import 'widgets/market_overview.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
-  GoogleFonts.config.allowRuntimeFetching = false;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -26,6 +30,13 @@ class InvestDenApp extends StatelessWidget {
     return MaterialApp(
       title: 'InvestDen',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.trackpad,
+        },
+      ),
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
@@ -49,11 +60,22 @@ class _HomeScreenState extends State<HomeScreen> {
   final StockService _stockService = StockService();
   List<Stock> _stocks = [];
   bool _isLoading = true;
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    // Auto-refresh every 60 seconds
+    _refreshTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
+      _loadData();
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -141,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 24),
                     const HorizontalMenu(),
                     const SizedBox(height: 16),
-                    PopularStocks(stocks: _stocks.take(3).toList()),
+                    PopularStocks(stocks: _stocks.take(6).toList()),
                     const SizedBox(height: 16),
                     MarketOverview(stocks: _stocks),
                     const SizedBox(height: 32),

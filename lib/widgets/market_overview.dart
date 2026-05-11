@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/stock_model.dart';
 import '../utils/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MarketOverview extends StatelessWidget {
   final List<Stock> stocks;
@@ -23,12 +25,13 @@ class MarketOverview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Market Overview',
-            style: TextStyle(
-              fontSize: 18,
+          Text(
+            'Semua Saham',
+            style: GoogleFonts.poppins(
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
+              letterSpacing: 0.2,
             ),
           ),
           const SizedBox(height: 16),
@@ -61,11 +64,21 @@ class MarketOverview extends StatelessWidget {
 
   Widget _buildCategoryHeader(String title) {
     String iconName = 'bank.svg';
-    if (title == 'Teknologi') { iconName = 'bolt.svg'; }
-    if (title == 'Energi') { iconName = 'bolt.svg'; }
-    if (title == 'Industri') { iconName = 'industry-windows.svg'; }
-    if (title == 'Infrastruktur') { iconName = 'building.svg'; }
-    if (title == 'Keuangan') { iconName = 'bank.svg'; }
+    if (title == 'Teknologi') {
+      iconName = 'bolt.svg';
+    }
+    if (title == 'Energi') {
+      iconName = 'bolt.svg';
+    }
+    if (title == 'Industri') {
+      iconName = 'industry-windows.svg';
+    }
+    if (title == 'Infrastruktur') {
+      iconName = 'building.svg';
+    }
+    if (title == 'Keuangan') {
+      iconName = 'bank.svg';
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -146,10 +159,11 @@ class MarketOverview extends StatelessWidget {
                     children: [
                       Text(
                         stock.symbol,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          color: const Color(0xFF374151),
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -166,10 +180,11 @@ class MarketOverview extends StatelessWidget {
                             ),
                             child: Text(
                               stock.category,
-                              style: const TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: AppColors.textTertiary,
                                 fontSize: 9,
                                 fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ),
@@ -206,8 +221,12 @@ class MarketOverview extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      stock.price.toStringAsFixed(0),
-                      style: const TextStyle(
+                      NumberFormat.currency(
+                        locale: 'id',
+                        symbol: 'Rp ',
+                        decimalDigits: 0,
+                      ).format(stock.price),
+                      style: GoogleFonts.poppins(
                         color: AppColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
