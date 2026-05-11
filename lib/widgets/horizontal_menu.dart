@@ -25,12 +25,16 @@ class _HorizontalMenuState extends State<HorizontalMenu> {
           return GestureDetector(
             onTap: () => setState(() => selectedIndex = index),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.neutral : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
+                color: isSelected ? AppColors.primary : AppColors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: isSelected 
+                  ? [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
+                  : [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))],
               ),
               alignment: Alignment.center,
               child: Text(
@@ -38,7 +42,7 @@ class _HorizontalMenuState extends State<HorizontalMenu> {
                 style: TextStyle(
                   color: isSelected ? Colors.white : AppColors.textSecondary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  fontSize: 13,
+                  fontSize: 14,
                 ),
               ),
             ),

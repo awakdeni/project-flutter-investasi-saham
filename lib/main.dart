@@ -24,7 +24,7 @@ class InvestDenApp extends StatelessWidget {
       title: 'InvestDen',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.white,
+        scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
         fontFamily: 'Inter',
@@ -69,13 +69,19 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        title: const Text(
-          'InvestDen',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -1,
-            color: AppColors.textPrimary,
+        toolbarHeight: 65,
+        title: Image.asset(
+          'assets/gambar/logo.png',
+          height: 35,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => const Text(
+            'InvestDen',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -1,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
         actions: [
