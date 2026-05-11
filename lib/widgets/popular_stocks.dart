@@ -45,7 +45,7 @@ class PopularStocks extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withAlpha(10), // 0.04 * 255 = ~10
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),

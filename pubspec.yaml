@@ -33,6 +33,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.1.0
   intl: ^0.18.1
+  flutter_svg: ^2.0.7
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +50,7 @@ flutter:
     - assets/icon/industrials/
     - assets/icon/infrastructures/
     - assets/gambar/
+    - assets/icon/icon-kategori/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

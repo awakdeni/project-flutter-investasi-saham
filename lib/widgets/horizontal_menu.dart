@@ -10,7 +10,13 @@ class HorizontalMenu extends StatefulWidget {
 
 class _HorizontalMenuState extends State<HorizontalMenu> {
   int selectedIndex = 0;
-  final List<String> menuItems = ['Home', 'Berita', 'Tentang Kami', 'Contact'];
+  final List<String> menuItems = [
+    'Semua',
+    'Keuangan',
+    'Teknologi',
+    'Energi',
+    'Industri',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +38,21 @@ class _HorizontalMenuState extends State<HorizontalMenu> {
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary : AppColors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: isSelected 
-                  ? [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
-                  : [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2))],
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primary.withAlpha(77),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(5),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
               ),
               alignment: Alignment.center,
               child: Text(

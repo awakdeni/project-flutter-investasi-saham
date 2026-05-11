@@ -6,8 +6,11 @@ import 'services/stock_service.dart';
 import 'widgets/horizontal_menu.dart';
 import 'widgets/popular_stocks.dart';
 import 'widgets/market_overview.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
+  GoogleFonts.config.allowRuntimeFetching = false;
+  
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
@@ -27,7 +30,7 @@ class InvestDenApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
-        fontFamily: 'Inter',
+        textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       home: const HomeScreen(),
     );
@@ -102,6 +105,40 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
+                    // Banner Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Container(
+                        height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(20), // 0.08 * 255 = ~20
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: Image.asset(
+                            'assets/gambar/header.jpg',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.primary.withAlpha(13), // 0.05 * 255 = ~13
+                                child: const Center(
+                                  child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     const HorizontalMenu(),
                     const SizedBox(height: 16),
                     PopularStocks(stocks: _stocks.take(3).toList()),
@@ -122,6 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
+
 
   Widget _buildBottomNavigation() {
     return BottomAppBar(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/stock_model.dart';
 import '../utils/app_colors.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MarketOverview extends StatelessWidget {
   final List<Stock> stocks;
@@ -41,7 +42,8 @@ class MarketOverview extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: entry.value.length,
-                  separatorBuilder: (context, index) => const Divider(color: AppColors.divider, height: 1),
+                  separatorBuilder: (context, index) =>
+                      const Divider(color: AppColors.divider, height: 1),
                   itemBuilder: (context, index) {
                     final stock = entry.value[index];
                     return _buildStockListItem(stock);
@@ -58,26 +60,39 @@ class MarketOverview extends StatelessWidget {
   }
 
   Widget _buildCategoryHeader(String title) {
-    String emoji = '🏦';
-    if (title == 'Teknologi') emoji = '💻';
-    if (title == 'Infrastruktur') emoji = '🏗️';
-    if (title == 'Energi') emoji = '⚡';
-    if (title == 'Industri') emoji = '🏭';
-    
+    String iconName = 'bank.svg';
+    if (title == 'Teknologi') { iconName = 'bolt.svg'; }
+    if (title == 'Energi') { iconName = 'bolt.svg'; }
+    if (title == 'Industri') { iconName = 'industry-windows.svg'; }
+    if (title == 'Infrastruktur') { iconName = 'building.svg'; }
+    if (title == 'Keuangan') { iconName = 'bank.svg'; }
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: AppColors.divider,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
+          SvgPicture.asset(
+            'assets/icon/icon-kategori/$iconName',
+            width: 16,
+            height: 16,
+            colorFilter: const ColorFilter.mode(
+              AppColors.primary,
+              BlendMode.srcIn,
+            ),
+          ),
           const SizedBox(width: 8),
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              color: AppColors.textPrimary,
+            ),
           ),
         ],
       ),
@@ -92,7 +107,7 @@ class MarketOverview extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withAlpha(8), // 0.03 * 255 = ~8
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -117,7 +132,11 @@ class MarketOverview extends StatelessWidget {
                   ),
                   child: Image.asset(
                     stock.iconPath,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.business, size: 24, color: AppColors.primary),
+                    errorBuilder: (_, __, ___) => const Icon(
+                      Icons.business,
+                      size: 24,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -137,7 +156,10 @@ class MarketOverview extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.background,
                               borderRadius: BorderRadius.circular(4),
@@ -175,7 +197,9 @@ class MarketOverview extends StatelessWidget {
                     Text(
                       '${stock.change >= 0 ? '+' : ''}${stock.changePercentage.toStringAsFixed(1)}%',
                       style: TextStyle(
-                        color: stock.change >= 0 ? AppColors.greenDefault : Colors.redAccent,
+                        color: stock.change >= 0
+                            ? AppColors.greenDefault
+                            : Colors.redAccent,
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
                       ),
@@ -212,7 +236,7 @@ class MarketOverview extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withAlpha(77), // 0.3 * 255 = ~77
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -222,7 +246,11 @@ class MarketOverview extends StatelessWidget {
         children: [
           const Text(
             'Mulai Investasi Sekarang',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -238,9 +266,14 @@ class MarketOverview extends StatelessWidget {
               foregroundColor: AppColors.primary,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: const Text('Buka Akun', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Buka Akun',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
