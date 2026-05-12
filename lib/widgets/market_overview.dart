@@ -4,6 +4,7 @@ import '../models/stock_model.dart';
 import '../utils/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../screens/stock_detail_screen.dart';
 
 class MarketOverview extends StatelessWidget {
   final List<Stock> stocks;
@@ -49,7 +50,7 @@ class MarketOverview extends StatelessWidget {
                       const Divider(color: AppColors.divider, height: 1),
                   itemBuilder: (context, index) {
                     final stock = entry.value[index];
-                    return _buildStockListItem(stock);
+                    return _buildStockListItem(context, stock);
                   },
                 ),
                 const SizedBox(height: 24),
@@ -112,7 +113,7 @@ class MarketOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildStockListItem(Stock stock) {
+  Widget _buildStockListItem(BuildContext context, Stock stock) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -130,7 +131,16 @@ class MarketOverview extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () {},
+          onTap: () {
+            Future.microtask(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StockDetailScreen(stock: stock),
+                ),
+              );
+            });
+          },
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
