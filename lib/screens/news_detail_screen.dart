@@ -20,9 +20,9 @@ class NewsDetailScreen extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tautan tidak valid.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Tautan tidak valid.')));
       }
     }
   }
@@ -33,8 +33,11 @@ class NewsDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(news.datetime * 1000);
-    final String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
+    final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+      news.datetime * 1000,
+    );
+    final String formattedDate =
+        "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -45,32 +48,48 @@ class NewsDetailScreen extends StatelessWidget {
             expandedHeight: 300,
             pinned: true,
             backgroundColor: AppColors.primary,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
+            leading: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                final navigator = Navigator.of(context);
+                Future.delayed(Duration.zero, () {
+                  navigator.pop();
+                });
+              },
+              child: const Center(
+                child: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+              ),
             ),
             flexibleSpace: FlexibleSpaceBar(
-            background: _hasValidImage(news.image)
-                ? Hero(
-                    tag: 'news-image-${news.id}',
-                    child: Image.network(
-                      news.image,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        child: const Center(
-                          child: Icon(Icons.image_not_supported, size: 64, color: AppColors.primary),
+              background: _hasValidImage(news.image)
+                  ? Hero(
+                      tag: 'news-image-${news.id}',
+                      child: Image.network(
+                        news.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          child: const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 64,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      child: const Center(
+                        child: Icon(
+                          Icons.newspaper,
+                          size: 64,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
-                  )
-                : Container(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    child: const Center(
-                      child: Icon(Icons.newspaper, size: 64, color: AppColors.primary),
-                    ),
-                  ),
-          ),
+            ),
           ),
 
           // Konten Berita
@@ -84,7 +103,10 @@ class NewsDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -137,14 +159,16 @@ class NewsDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    news.summary.isNotEmpty ? news.summary : "Tidak ada ringkasan yang tersedia untuk berita ini.",
+                    news.summary.isNotEmpty
+                        ? news.summary
+                        : "Tidak ada ringkasan yang tersedia untuk berita ini.",
                     style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.textSecondary,
                       height: 1.8,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 40),
 
                   // CTA Button
@@ -166,7 +190,10 @@ class NewsDetailScreen extends StatelessWidget {
                         children: [
                           Text(
                             "Baca Selengkapnya di Sumber Asli",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                           SizedBox(width: 8),
                           Icon(Icons.open_in_new, size: 18),

@@ -37,7 +37,9 @@ class _NewsContentState extends State<NewsContent> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
     }
 
     if (_newsList.isEmpty) {
@@ -45,7 +47,11 @@ class _NewsContentState extends State<NewsContent> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.newspaper_outlined, size: 64, color: AppColors.textTertiary.withValues(alpha: 0.5)),
+            Icon(
+              Icons.newspaper_outlined,
+              size: 64,
+              color: AppColors.textTertiary.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
             const Text(
               'Gagal memuat berita.',
@@ -54,7 +60,10 @@ class _NewsContentState extends State<NewsContent> {
             const SizedBox(height: 8),
             TextButton(
               onPressed: _loadNews,
-              child: const Text('Coba Lagi', style: TextStyle(color: AppColors.primary)),
+              child: const Text(
+                'Coba Lagi',
+                style: TextStyle(color: AppColors.primary),
+              ),
             ),
           ],
         ),
@@ -96,21 +105,24 @@ class _NewsContentState extends State<NewsContent> {
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+        child: ScaleOnTap(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NewsDetailScreen(news: news),
-              ),
-            );
+            final navigator = Navigator.of(context);
+            Future.delayed(Duration.zero, () {
+              navigator.push(
+                MaterialPageRoute(
+                  builder: (context) => NewsDetailScreen(news: news),
+                ),
+              );
+            });
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
                 child: _hasValidImage(news.image)
                     ? Hero(
                         tag: 'news-image-${news.id}',
@@ -119,23 +131,30 @@ class _NewsContentState extends State<NewsContent> {
                           height: 180,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            height: 180,
-                            color: AppColors.primary.withValues(alpha: 0.08),
-                            child: const Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.image_not_supported, size: 48, color: AppColors.primary),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Tidak ada gambar',
-                                    style: TextStyle(color: AppColors.primary),
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                height: 180,
+                                color: AppColors.primary.withValues(alpha: 0.08),
+                                child: const Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.image_not_supported,
+                                        size: 48,
+                                        color: AppColors.primary,
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Tidak ada gambar',
+                                        style: TextStyle(
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
                         ),
                       )
                     : Container(
@@ -145,7 +164,11 @@ class _NewsContentState extends State<NewsContent> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.image, size: 48, color: AppColors.primary),
+                              Icon(
+                                Icons.image,
+                                size: 48,
+                                color: AppColors.primary,
+                              ),
                               SizedBox(height: 8),
                               Text(
                                 'Tidak ada gambar',
@@ -174,7 +197,11 @@ class _NewsContentState extends State<NewsContent> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _getTimeAgo(DateTime.fromMillisecondsSinceEpoch(news.datetime * 1000)),
+                      _getTimeAgo(
+                        DateTime.fromMillisecondsSinceEpoch(
+                          news.datetime * 1000,
+                        ),
+                      ),
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textTertiary,
@@ -194,11 +221,42 @@ class _NewsContentState extends State<NewsContent> {
     final Duration difference = DateTime.now().difference(dateTime);
     if (difference.inDays > 0) return '${difference.inDays} hari yang lalu';
     if (difference.inHours > 0) return '${difference.inHours} jam yang lalu';
-    if (difference.inMinutes > 0) return '${difference.inMinutes} menit yang lalu';
+    if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} menit yang lalu';
+    }
     return 'Baru saja';
   }
 
   bool _hasValidImage(String imageUrl) {
     return imageUrl.trim().isNotEmpty;
+  }
+}
+
+class ScaleOnTap extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const ScaleOnTap({super.key, required this.child, required this.onTap});
+
+  @override
+  State<ScaleOnTap> createState() => _ScaleOnTapState();
+}
+
+class _ScaleOnTapState extends State<ScaleOnTap> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.96 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: widget.child,
+      ),
+    );
   }
 }

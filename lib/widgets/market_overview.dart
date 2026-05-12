@@ -127,19 +127,18 @@ class MarketOverview extends StatelessWidget {
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            Navigator.push(
-              context,
+      child: ScaleOnTap(
+        onTap: () {
+          final navigator = Navigator.of(context);
+          Future.delayed(Duration.zero, () {
+            navigator.push(
               MaterialPageRoute(
                 builder: (context) => StockDetailScreen(stock: stock),
               ),
             );
-          },
-          child: Padding(
+          });
+        },
+        child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
@@ -253,8 +252,7 @@ class MarketOverview extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildCTA() {
@@ -294,6 +292,35 @@ class MarketOverview extends StatelessWidget {
           ),
 
         ],
+      ),
+    );
+  }
+}
+
+class ScaleOnTap extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const ScaleOnTap({super.key, required this.child, required this.onTap});
+
+  @override
+  State<ScaleOnTap> createState() => _ScaleOnTapState();
+}
+
+class _ScaleOnTapState extends State<ScaleOnTap> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.96 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: widget.child,
       ),
     );
   }

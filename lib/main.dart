@@ -36,7 +36,6 @@ class InvestDenApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {
-          PointerDeviceKind.mouse,
           PointerDeviceKind.touch,
           PointerDeviceKind.trackpad,
         },

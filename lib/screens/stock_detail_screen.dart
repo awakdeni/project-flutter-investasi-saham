@@ -54,9 +54,16 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Navigator.pop(context),
+        leading: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            final navigator = Navigator.of(context);
+            // Gunakan delay nol untuk memastikan frame selesai sebelum pop
+            Future.delayed(Duration.zero, () {
+              navigator.pop();
+            });
+          },
+          child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
         title: Text(
           widget.stock.symbol,
@@ -70,66 +77,66 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _historicalData == null || _historicalData!.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.cloud_off_rounded,
-                        size: 48,
-                        color: AppColors.textTertiary,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Data Historis Tidak Tersedia',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Text(
-                          'Gagal memuat data historis dari server. Periksa koneksi Anda.',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() => _isLoading = true);
-                          _loadHistoricalData();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text('Coba Lagi'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.cloud_off_rounded,
+                    size: 48,
+                    color: AppColors.textTertiary,
                   ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildStockHeader(),
-                      const SizedBox(height: 24),
-                      _buildPeriodSelector(),
-                      const SizedBox(height: 24),
-                      _buildChart(),
-                      const SizedBox(height: 24),
-                      _buildStatistics(),
-                    ],
+                  const SizedBox(height: 16),
+                  Text(
+                    'Data Historis Tidak Tersedia',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      'Gagal memuat data historis dari server. Periksa koneksi Anda.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() => _isLoading = true);
+                      _loadHistoricalData();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Coba Lagi'),
+                  ),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildStockHeader(),
+                  const SizedBox(height: 24),
+                  _buildPeriodSelector(),
+                  const SizedBox(height: 24),
+                  _buildChart(),
+                  const SizedBox(height: 24),
+                  _buildStatistics(),
+                ],
+              ),
+            ),
     );
   }
 
@@ -282,8 +289,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
             child: GestureDetector(
               onTap: () => setState(() => _selectedPeriod = period),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : AppColors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -317,9 +326,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
-          child: Text('Data tidak tersedia'),
-        ),
+        child: const Center(child: Text('Data tidak tersedia')),
       );
     }
 
@@ -414,10 +421,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         Text(
           value,
@@ -456,10 +460,8 @@ class ChartPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
 
     final fillPaint = Paint()
-      ..color =
-          (isPositive ? AppColors.greenDefault : Colors.redAccent).withValues(
-        alpha: 0.1,
-      )
+      ..color = (isPositive ? AppColors.greenDefault : Colors.redAccent)
+          .withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     final priceRange = maxPrice - minPrice;

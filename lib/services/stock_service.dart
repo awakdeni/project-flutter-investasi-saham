@@ -74,7 +74,8 @@ class StockService {
 
   Future<Stock?> _fetchSingleStock(String symbol, double usdToIdr) async {
     try {
-      final response = await http.get(_buildChartUri(symbol)).timeout(_requestTimeout);
+      final response =
+          await http.get(_buildChartUri(symbol)).timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -115,18 +116,21 @@ class StockService {
     try {
       // 1. Get Exchange Rate
       try {
-        final rateResponse = await http.get(_buildChartUri('IDR=X')).timeout(const Duration(seconds: 5));
+        final rateResponse = await http
+            .get(_buildChartUri('IDR=X'))
+            .timeout(const Duration(seconds: 5));
         if (rateResponse.statusCode == 200) {
           final rateData = json.decode(rateResponse.body);
-          usdToIdr = (rateData['chart']['result'][0]['meta']['regularMarketPrice'] as num).toDouble();
+          usdToIdr = (rateData['chart']['result'][0]['meta']
+                  ['regularMarketPrice'] as num)
+              .toDouble();
         }
       } catch (_) {}
 
       // 2. Fetch all stocks in PARALLEL
       final List<String> symbols = _stockMetadata.keys.toList();
       final List<Stock?> results = await Future.wait(
-        symbols.map((symbol) => _fetchSingleStock(symbol, usdToIdr))
-      );
+          symbols.map((symbol) => _fetchSingleStock(symbol, usdToIdr)));
 
       // 3. Filter out nulls and return
       return results.whereType<Stock>().toList();
@@ -146,11 +150,14 @@ class StockService {
     double usdToIdr = 16250.0;
     if (symbol == 'GOLD' || symbol == 'GC=F') {
       try {
-        final rateResponse =
-            await http.get(_buildChartUri('IDR=X')).timeout(const Duration(seconds: 5));
+        final rateResponse = await http
+            .get(_buildChartUri('IDR=X'))
+            .timeout(const Duration(seconds: 5));
         if (rateResponse.statusCode == 200) {
           final rateData = json.decode(rateResponse.body);
-          usdToIdr = (rateData['chart']['result'][0]['meta']['regularMarketPrice'] as num).toDouble();
+          usdToIdr = (rateData['chart']['result'][0]['meta']
+                  ['regularMarketPrice'] as num)
+              .toDouble();
         }
       } catch (_) {}
     }
@@ -187,10 +194,11 @@ class StockService {
 
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
-          
+
           // Check if response has error
           if (data['chart']['error'] != null) {
-            debugPrint('Chart error for $querySymbol: ${data['chart']['error']}');
+            debugPrint(
+                'Chart error for $querySymbol: ${data['chart']['error']}');
             continue;
           }
 
@@ -203,7 +211,7 @@ class StockService {
 
           final timestamps = (resultData['timestamp'] as List).cast<int>();
           final quoteData = resultData['indicators']['quote'] as List;
-          
+
           if (quoteData.isEmpty) {
             debugPrint('No quote data for $querySymbol');
             continue;
@@ -222,7 +230,7 @@ class StockService {
           final dataPoints = <HistoricalDataPoint>[];
           for (int i = 0; i < timestamps.length && i < closes.length; i++) {
             double price = closes[i];
-            
+
             // Convert from USD to IDR for emas
             if (querySymbol == 'GC=F') {
               // Yahoo returns price per troy ounce
@@ -247,13 +255,13 @@ class StockService {
 
             final startPrice = dataPoints.first.price;
             final endPrice = dataPoints.last.price;
-            final changePercent =
-                ((endPrice - startPrice) / startPrice) * 100;
+            final changePercent = ((endPrice - startPrice) / startPrice) * 100;
 
             // Validate data: jika currentPrice disediakan, pastikan dalam range yang reasonable
             if (currentPrice != null && currentPrice > 0) {
               // Harga historis seharusnya dalam range 50% - 200% dari current price untuk reasonable data
-              if (maxPrice < currentPrice * 0.3 || minPrice > currentPrice * 3) {
+              if (maxPrice < currentPrice * 0.3 ||
+                  minPrice > currentPrice * 3) {
                 debugPrint(
                   'Warning: Suspicious historical data for $symbol. '
                   'CurrentPrice: $currentPrice, Historical range: $minPrice - $maxPrice',
@@ -280,7 +288,8 @@ class StockService {
           debugPrint('HTTP error for $querySymbol: ${response.statusCode}');
         }
       } catch (e) {
-        debugPrint('Error fetching historical data for $symbol (${entry.key}): $e');
+        debugPrint(
+            'Error fetching historical data for $symbol (${entry.key}): $e');
       }
     }
 
