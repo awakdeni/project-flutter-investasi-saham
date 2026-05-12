@@ -120,7 +120,7 @@ class MarketOverview extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(8), // 0.03 * 255 = ~8
+            color: Colors.black.withValues(alpha: 0.03), // 0.03 * 255 = ~8
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -262,7 +262,7 @@ class MarketOverview extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withAlpha(77), // 0.3 * 255 = ~77
+            color: AppColors.primary.withValues(alpha: 0.3), // 0.3 * 255 = ~77
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

@@ -199,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(20),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      color: AppColors.primary.withAlpha(13),
+                      color: AppColors.primary.withValues(alpha: 0.05),
                       child: const Center(
                         child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
                       ),

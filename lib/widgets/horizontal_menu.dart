@@ -47,14 +47,14 @@ class _HorizontalMenuState extends State<HorizontalMenu> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.primary.withAlpha(77),
+                          color: AppColors.primary.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withAlpha(5),
+                          color: Colors.black.withValues(alpha: 0.02),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
