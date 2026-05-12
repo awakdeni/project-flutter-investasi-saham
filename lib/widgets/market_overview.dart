@@ -280,27 +280,11 @@ class MarketOverview extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Buka akun saham Anda hanya dalam 5 menit.',
+            'Mulai dari kecil, tumbuh jadi besar.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppColors.primary,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              'Buka Akun',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
+
         ],
       ),
     );
