@@ -2,20 +2,26 @@ import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 
 class HorizontalMenu extends StatefulWidget {
-  const HorizontalMenu({super.key});
+  final Function(String) onMenuSelected;
+  final String selectedMenu;
+
+  const HorizontalMenu({
+    super.key, 
+    required this.onMenuSelected,
+    required this.selectedMenu,
+  });
 
   @override
   State<HorizontalMenu> createState() => _HorizontalMenuState();
 }
 
 class _HorizontalMenuState extends State<HorizontalMenu> {
-  int selectedIndex = 0;
   final List<String> menuItems = [
-    'Semua',
-    'Keuangan',
-    'Teknologi',
-    'Energi',
-    'Industri',
+    'Home',
+    'Update',
+    'Berita',
+    'FAQ',
+    'Tentang Kami',
   ];
 
   @override
@@ -27,9 +33,9 @@ class _HorizontalMenuState extends State<HorizontalMenu> {
         itemCount: menuItems.length,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
-          bool isSelected = selectedIndex == index;
+          bool isSelected = widget.selectedMenu == menuItems[index];
           return GestureDetector(
-            onTap: () => setState(() => selectedIndex = index),
+            onTap: () => widget.onMenuSelected(menuItems[index]),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,

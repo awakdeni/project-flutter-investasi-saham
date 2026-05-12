@@ -1,4 +1,4 @@
-// VERSI BERSIH - TANPA PRINT
+// VERSI OPTIMAL - PARALLEL LOADING
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -62,7 +62,7 @@ class StockService {
     },
   };
 
-  final Duration _requestTimeout = const Duration(seconds: 12);
+  final Duration _requestTimeout = const Duration(seconds: 10);
 
   Uri _buildChartUri(String symbol) {
     final endpoint = '$_chartBaseUrl/$symbol?interval=1m&range=1d';
@@ -71,74 +71,66 @@ class StockService {
     );
   }
 
-  Future<http.Response> _getChartResponse(Uri uri) {
-    return http
-        .get(uri)
-        .timeout(_requestTimeout, onTimeout: () => http.Response('', 408));
+  Future<Stock?> _fetchSingleStock(String symbol, double usdToIdr) async {
+    try {
+      final response = await http.get(_buildChartUri(symbol)).timeout(_requestTimeout);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final meta = data['chart']['result'][0]['meta'];
+
+        double price = (meta['regularMarketPrice'] as num).toDouble();
+        double prevClose = (meta['previousClose'] as num).toDouble();
+
+        if (symbol == 'GC=F') {
+          price = (price / 31.1035) * usdToIdr;
+          prevClose = (prevClose / 31.1035) * usdToIdr;
+        }
+
+        double change = price - prevClose;
+        double changePercent = (change / prevClose) * 100;
+
+        final metadata = _stockMetadata[symbol]!;
+
+        return Stock(
+          symbol: symbol == 'GC=F' ? 'GOLD' : symbol.replaceAll('.JK', ''),
+          name: metadata['name']!,
+          price: price,
+          change: change,
+          changePercentage: changePercent,
+          category: metadata['cat']!,
+          iconPath: metadata['icon']!,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error fetching $symbol: $e');
+    }
+    return null;
   }
 
   Future<List<Stock>> getStocks() async {
-    List<Stock> stocks = [];
     double usdToIdr = 16250.0;
 
     try {
+      // 1. Get Exchange Rate
       try {
-        final rateResponse = await _getChartResponse(_buildChartUri('IDR=X'));
+        final rateResponse = await http.get(_buildChartUri('IDR=X')).timeout(const Duration(seconds: 5));
         if (rateResponse.statusCode == 200) {
           final rateData = json.decode(rateResponse.body);
-          usdToIdr =
-              (rateData['chart']['result'][0]['meta']['regularMarketPrice']
-                      as num)
-                  .toDouble();
+          usdToIdr = (rateData['chart']['result'][0]['meta']['regularMarketPrice'] as num).toDouble();
         }
       } catch (_) {}
 
+      // 2. Fetch all stocks in PARALLEL
       final List<String> symbols = _stockMetadata.keys.toList();
-      for (var symbol in symbols) {
-        try {
-          final response = await _getChartResponse(_buildChartUri(symbol));
+      final List<Stock?> results = await Future.wait(
+        symbols.map((symbol) => _fetchSingleStock(symbol, usdToIdr))
+      );
 
-          if (response.statusCode == 200) {
-            final data = json.decode(response.body);
-            final meta = data['chart']['result'][0]['meta'];
-
-            double price = (meta['regularMarketPrice'] as num).toDouble();
-            double prevClose = (meta['previousClose'] as num).toDouble();
-
-            if (symbol == 'GC=F') {
-              price = (price / 31.1035) * usdToIdr;
-              prevClose = (prevClose / 31.1035) * usdToIdr;
-            }
-
-            double change = price - prevClose;
-            double changePercent = (change / prevClose) * 100;
-
-            final metadata = _stockMetadata[symbol]!;
-
-            stocks.add(
-              Stock(
-                symbol: symbol == 'GC=F'
-                    ? 'GOLD'
-                    : symbol.replaceAll('.JK', ''),
-                name: metadata['name']!,
-                price: price,
-                change: change,
-                changePercentage: changePercent,
-                category: metadata['cat']!,
-                iconPath: metadata['icon']!,
-              ),
-            );
-          }
-        } catch (e) {
-          // Menggunakan debugPrint sesuai standar
-          debugPrint('Error: $e');
-        }
-      }
-
-      return stocks;
+      // 3. Filter out nulls and return
+      return results.whereType<Stock>().toList();
     } catch (e) {
-      // Menggunakan debugPrint sesuai standar
-      debugPrint('StockService Error: $e');
+      debugPrint('StockService Global Error: $e');
       return [];
     }
   }

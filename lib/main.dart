@@ -10,14 +10,12 @@ import 'widgets/popular_stocks.dart';
 import 'widgets/market_overview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'screens/about_screen.dart'; 
+import 'screens/faq_screen.dart'; // Import konten FAQ
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Firebase removed
   await initializeDateFormatting('id_ID', null);
   
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -53,6 +51,8 @@ class InvestDenApp extends StatelessWidget {
   }
 }
 
+
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -63,6 +63,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _bottomNavIndex = 0;
   final StockService _stockService = StockService();
+  // final AuthService _authService = AuthService(); // Hapus auth service
+  String _selectedMenu = 'Home'; // Status menu aktif
   List<Stock> _stocks = [];
   bool _isLoading = true;
   Timer? _refreshTimer;
@@ -84,11 +86,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadData() async {
-    final stocks = await _stockService.getStocks();
-    setState(() {
-      _stocks = stocks;
-      _isLoading = false;
-    });
+    try {
+      final stocks = await _stockService.getStocks();
+      if (mounted) {
+        setState(() {
+          _stocks = stocks;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error Loading Data: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -115,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.search, color: AppColors.neutral),
@@ -124,58 +138,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              color: AppColors.primary,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    // Banner Header
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Container(
-                        height: 180,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withAlpha(20), // 0.08 * 255 = ~20
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: Image.asset(
-                            'assets/gambar/header.jpg',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppColors.primary.withAlpha(13), // 0.05 * 255 = ~13
-                                child: const Center(
-                                  child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const HorizontalMenu(),
-                    const SizedBox(height: 16),
-                    PopularStocks(stocks: _stocks.take(6).toList()),
-                    const SizedBox(height: 16),
-                    MarketOverview(stocks: _stocks),
-                    const SizedBox(height: 32),
-                  ],
+          : Column(
+              children: [
+                const SizedBox(height: 16),
+                // Menu Horizontal Tetap di Atas
+                HorizontalMenu(
+                  selectedMenu: _selectedMenu,
+                  onMenuSelected: (menu) {
+                    setState(() => _selectedMenu = menu);
+                  },
                 ),
-              ),
+                const SizedBox(height: 8),
+                
+                // Konten yang Berubah-ubah
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _loadData,
+                    color: AppColors.primary,
+                    child: _buildContent(),
+                  ),
+                ),
+              ],
             ),
+
       bottomNavigationBar: _buildBottomNavigation(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -187,6 +172,65 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
+  Widget _buildContent() {
+    if (_selectedMenu == 'Tentang Kami') {
+      return const AboutContent();
+    }
+    
+    if (_selectedMenu == 'FAQ') {
+      return const FaqContent();
+    }
+    
+    // Default Dashboard Content
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 8),
+          // Banner Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              height: 180,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.asset(
+                  'assets/gambar/header.jpg',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AppColors.primary.withAlpha(13),
+                      child: const Center(
+                        child: Icon(Icons.image_outlined, size: 48, color: AppColors.primary),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          PopularStocks(stocks: _stocks.take(6).toList()),
+          const SizedBox(height: 16),
+          MarketOverview(stocks: _stocks),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
 
   Widget _buildBottomNavigation() {
     return BottomAppBar(
