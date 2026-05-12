@@ -17,8 +17,7 @@ class HorizontalMenu extends StatefulWidget {
 
 class _HorizontalMenuState extends State<HorizontalMenu> {
   final List<String> menuItems = [
-    'Home',
-    'Update',
+    'Beranda',
     'Berita',
     'FAQ',
     'Tentang Kami',

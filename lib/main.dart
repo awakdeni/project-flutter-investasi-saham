@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'screens/about_screen.dart'; 
 import 'screens/faq_screen.dart'; // Import konten FAQ
+import 'screens/news_screen.dart'; // Import konten Berita
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _bottomNavIndex = 0;
   final StockService _stockService = StockService();
   // final AuthService _authService = AuthService(); // Hapus auth service
-  String _selectedMenu = 'Home'; // Status menu aktif
+  String _selectedMenu = 'Beranda'; // Status menu aktif
   List<Stock> _stocks = [];
   bool _isLoading = true;
   Timer? _refreshTimer;
@@ -180,6 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
     
     if (_selectedMenu == 'FAQ') {
       return const FaqContent();
+    }
+    
+    if (_selectedMenu == 'Berita') {
+      return const NewsContent();
     }
     
     // Default Dashboard Content
