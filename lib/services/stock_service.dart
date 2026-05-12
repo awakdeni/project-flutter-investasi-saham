@@ -137,8 +137,9 @@ class StockService {
   }
 
   Future<Map<String, HistoricalPeriod>> getHistoricalData(
-    String symbol,
-  ) async {
+    String symbol, {
+    double? currentPrice,
+  }) async {
     final Map<String, HistoricalPeriod> result = {};
 
     // Get USD to IDR exchange rate for emas conversion
@@ -161,7 +162,16 @@ class StockService {
       '5 Tahun': {'range': '5y', 'interval': '3mo'},
     };
 
-    final querySymbol = symbol == 'GOLD' ? 'GC=F' : symbol;
+    // Map symbol ke format yang benar untuk Yahoo Finance
+    String querySymbol = symbol;
+    if (symbol == 'GOLD') {
+      querySymbol = 'GC=F';
+    } else if (!symbol.contains('.')) {
+      // Tambah .JK jika belum ada (untuk saham Indonesia)
+      querySymbol = '$symbol.JK';
+    }
+
+    debugPrint('Fetching historical data for $symbol (query: $querySymbol)');
 
     for (final entry in periods.entries) {
       try {
@@ -189,10 +199,10 @@ class StockService {
             continue;
           }
 
-          final result_data = data['chart']['result'][0];
+          final resultData = data['chart']['result'][0];
 
-          final timestamps = (result_data['timestamp'] as List).cast<int>();
-          final quoteData = result_data['indicators']['quote'] as List;
+          final timestamps = (resultData['timestamp'] as List).cast<int>();
+          final quoteData = resultData['indicators']['quote'] as List;
           
           if (quoteData.isEmpty) {
             debugPrint('No quote data for $querySymbol');
@@ -240,6 +250,18 @@ class StockService {
             final changePercent =
                 ((endPrice - startPrice) / startPrice) * 100;
 
+            // Validate data: jika currentPrice disediakan, pastikan dalam range yang reasonable
+            if (currentPrice != null && currentPrice > 0) {
+              // Harga historis seharusnya dalam range 50% - 200% dari current price untuk reasonable data
+              if (maxPrice < currentPrice * 0.3 || minPrice > currentPrice * 3) {
+                debugPrint(
+                  'Warning: Suspicious historical data for $symbol. '
+                  'CurrentPrice: $currentPrice, Historical range: $minPrice - $maxPrice',
+                );
+                continue;
+              }
+            }
+
             result[label] = HistoricalPeriod(
               label: label,
               data: dataPoints,
@@ -262,67 +284,10 @@ class StockService {
       }
     }
 
-    // Provide mock data if no real data available (untuk development/testing)
     if (result.isEmpty) {
-      debugPrint(
-          'No historical data fetched for $symbol, generating mock data for demo');
-      result.addAll(_generateMockData(symbol));
+      debugPrint('Warning: No historical data fetched for $symbol');
     }
 
     return result;
-  }
-
-  // Generate mock data untuk development/testing
-  Map<String, HistoricalPeriod> _generateMockData(String symbol) {
-    final Map<String, HistoricalPeriod> mockResult = {};
-    final now = DateTime.now();
-    final basePrice = 100.0 + (symbol.hashCode % 100);
-
-    final periods = {
-      '1 Bulan': 30,
-      '3 Bulan': 90,
-      '1 Tahun': 365,
-      '5 Tahun': 1825,
-    };
-
-    for (final entry in periods.entries) {
-      final label = entry.key;
-      final days = entry.value;
-
-      final dataPoints = <HistoricalDataPoint>[];
-      for (int i = 0; i < days; i++) {
-        final price = basePrice +
-            (10 * (i / days)) +
-            (5 * ((i * 7) % 11) / 11) -
-            (3 * ((i * 13) % 7) / 7);
-        dataPoints.add(
-          HistoricalDataPoint(
-            date: now.subtract(Duration(days: days - i)),
-            price: price.abs().clamp(basePrice * 0.7, basePrice * 1.3),
-          ),
-        );
-      }
-
-      if (dataPoints.isNotEmpty) {
-        final minPrice =
-            dataPoints.map((e) => e.price).reduce((a, b) => a < b ? a : b);
-        final maxPrice =
-            dataPoints.map((e) => e.price).reduce((a, b) => a > b ? a : b);
-
-        final startPrice = dataPoints.first.price;
-        final endPrice = dataPoints.last.price;
-        final changePercent = ((endPrice - startPrice) / startPrice) * 100;
-
-        mockResult[label] = HistoricalPeriod(
-          label: label,
-          data: dataPoints,
-          changePercent: changePercent,
-          minPrice: minPrice,
-          maxPrice: maxPrice,
-        );
-      }
-    }
-
-    return mockResult;
   }
 }

@@ -132,14 +132,12 @@ class MarketOverview extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
-            Future.microtask(() {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => StockDetailScreen(stock: stock),
-                ),
-              );
-            });
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StockDetailScreen(stock: stock),
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(16),

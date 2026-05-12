@@ -29,7 +29,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
 
   Future<void> _loadHistoricalData() async {
     try {
-      final data = await _stockService.getHistoricalData(widget.stock.symbol);
+      final data = await _stockService.getHistoricalData(
+        widget.stock.symbol,
+        currentPrice: widget.stock.price,
+      );
       if (mounted) {
         setState(() {
           _historicalData = data;
@@ -72,7 +75,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(
-                        Icons.warning_amber_rounded,
+                        Icons.cloud_off_rounded,
                         size: 48,
                         color: AppColors.textTertiary,
                       ),
@@ -86,12 +89,28 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Silakan coba lagi nanti',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          'Gagal memuat data historis dari server. Periksa koneksi Anda.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() => _isLoading = true);
+                          _loadHistoricalData();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Coba Lagi'),
                       ),
                     ],
                   ),
@@ -351,7 +370,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Statistik ${_selectedPeriod}',
+            'Statistik $_selectedPeriod',
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.bold,
