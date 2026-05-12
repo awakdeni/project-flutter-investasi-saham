@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895316073814",
+    "project_id": "investden-b16fa",
+    "storage_bucket": "investden-b16fa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895316073814:android:5b1ec389301a1566168af7",
+        "android_client_info": {
+          "package_name": "com.example.investden"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPy6MlbY31U_rNLs9zqjAPuL6FPKAD-NQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -55,7 +55,7 @@ class MarketOverview extends StatelessWidget {
                 const SizedBox(height: 24),
               ],
             );
-          }).toList(),
+          }),
           _buildCTA(),
         ],
       ),
@@ -145,7 +145,7 @@ class MarketOverview extends StatelessWidget {
                   ),
                   child: Image.asset(
                     stock.iconPath,
-                    errorBuilder: (_, __, ___) => const Icon(
+                    errorBuilder: (_, _, _) => const Icon(
                       Icons.business,
                       size: 24,
                       color: AppColors.primary,
@@ -159,6 +159,7 @@ class MarketOverview extends StatelessWidget {
                     children: [
                       Text(
                         stock.symbol,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
@@ -169,27 +170,33 @@ class MarketOverview extends StatelessWidget {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              stock.category,
-                              style: GoogleFonts.poppins(
-                                color: AppColors.textTertiary,
-                                fontSize: 9,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.background,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                stock.category,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  color: AppColors.textTertiary,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Flexible(
+                          Expanded(
+                            flex: 2,
                             child: Text(
                               stock.name,
                               maxLines: 1,
